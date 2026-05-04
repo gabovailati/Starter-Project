@@ -1,8 +1,160 @@
 main {
-  display: flex;
+  position: relative;
+  display: block;
   min-height: 100svh;
+  width: 100vw;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hero {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   align-items: center;
   justify-content: center;
+  transition: opacity 600ms ease;
+  pointer-events: none;
+}
+
+.hero.dispatched {
+  opacity: 0;
+}
+
+.train-emoji {
   font-size: 80px;
   line-height: 1;
+  display: inline-block;
+  transform-origin: 50% 60%;
+  pointer-events: auto;
+}
+
+.train-emoji:hover {
+  animation: wiggle 600ms ease-in-out;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: translateY(-4px) rotate(-6deg); }
+  75% { transform: translateY(-4px) rotate(6deg); }
+}
+
+.tagline {
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #999;
+  letter-spacing: 0.04em;
+}
+
+.train {
+  position: fixed;
+  font-size: 48px;
+  line-height: 1;
+  pointer-events: none;
+  will-change: transform;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  z-index: 1;
+}
+
+.train.ltr {
+  left: 0;
+  animation-name: train-ltr;
+}
+
+.train.rtl {
+  left: 0;
+  animation-name: train-rtl;
+}
+
+/* Emojis face left by default; flip horizontally when moving rightward. */
+@keyframes train-ltr {
+  from { transform: translateX(-15vw) scaleX(-1); }
+  to   { transform: translateX(115vw) scaleX(-1); }
+}
+
+@keyframes train-rtl {
+  from { transform: translateX(115vw); }
+  to   { transform: translateX(-15vw); }
+}
+
+.steam {
+  position: fixed;
+  font-size: 22px;
+  color: #c4c4c4;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: puff 1400ms ease-out forwards;
+  z-index: 0;
+}
+
+@keyframes puff {
+  0%   { opacity: 0.7; transform: translate(0, 0) scale(0.8); }
+  100% { opacity: 0;   transform: translate(0, -40px) scale(1.4); }
+}
+
+.mute-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: 1px solid #eee;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+  z-index: 10;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.mute-toggle:hover {
+  border-color: #ccc;
+  transform: scale(1.05);
+}
+
+.mute-toggle:focus-visible {
+  outline: 2px solid #888;
+  outline-offset: 2px;
+}
+
+.counter {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-emoji:hover { animation: none; }
+  .steam { display: none; }
+
+  .train.ltr,
+  .train.rtl {
+    left: 50%;
+    right: auto;
+    animation: fade-blip 1500ms ease both !important;
+  }
+
+  @keyframes fade-blip {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.85); }
+    20%  { opacity: 1; transform: translateX(-50%) scale(1); }
+    80%  { opacity: 1; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) scale(1); }
+  }
+
+  .hero { transition: none; }
 }
