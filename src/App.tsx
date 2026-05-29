@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.css'
 
+const STARS: { x: number; y: number; delay: number }[] = [
+  { x: 5, y: 8, delay: 0 }, { x: 15, y: 3, delay: 0.4 }, { x: 28, y: 12, delay: 0.9 },
+  { x: 42, y: 5, delay: 0.2 }, { x: 55, y: 15, delay: 0.7 }, { x: 68, y: 4, delay: 1.1 },
+  { x: 78, y: 9, delay: 0.5 }, { x: 90, y: 6, delay: 0.3 }, { x: 20, y: 22, delay: 1.3 },
+  { x: 35, y: 28, delay: 0.6 }, { x: 50, y: 18, delay: 0.1 }, { x: 62, y: 25, delay: 0.8 },
+  { x: 75, y: 30, delay: 1.5 }, { x: 88, y: 20, delay: 0.4 }, { x: 8, y: 35, delay: 1.0 },
+]
+
 type Direction = 'ltr' | 'rtl'
 
 type Train = {
@@ -40,6 +48,10 @@ function App() {
     return localStorage.getItem('wtc:muted') === '1'
   })
   const [hasDispatched, setHasDispatched] = useState(false)
+  const [nightMode, setNightMode] = useState<boolean>(() => {
+    if (typeof localStorage === 'undefined') return false
+    return localStorage.getItem('wtc:night') === '1'
+  })
 
   const nextIdRef = useRef(1)
   const lastDispatchRef = useRef(0)
@@ -52,6 +64,10 @@ function App() {
     mutedRef.current = muted
     localStorage.setItem('wtc:muted', muted ? '1' : '0')
   }, [muted])
+
+  useEffect(() => {
+    localStorage.setItem('wtc:night', nightMode ? '1' : '0')
+  }, [nightMode])
 
   useEffect(() => {
     if (chooRef.current) return
@@ -141,7 +157,19 @@ function App() {
   }, [dispatch])
 
   return (
-    <main onClick={dispatch}>
+    <main className={nightMode ? 'night' : ''} onClick={dispatch}>
+      {nightMode && (
+        <div className="stars" aria-hidden>
+          {STARS.map((s, i) => (
+            <span
+              key={i}
+              className="star"
+              style={{ left: `${s.x}vw`, top: `${s.y}vh`, animationDelay: `${s.delay}s` }}
+            >✦</span>
+          ))}
+        </div>
+      )}
+
       <div className={`hero${hasDispatched ? ' dispatched' : ''}`} aria-hidden={hasDispatched}>
         <span className="train-emoji" role="img" aria-label="train">🚂</span>
         <span className="tagline">click anywhere to dispatch a train</span>
@@ -171,6 +199,18 @@ function App() {
           {p.char}
         </span>
       ))}
+
+      <button
+        className="night-toggle"
+        onClick={(e) => {
+          e.stopPropagation()
+          setNightMode((n) => !n)
+        }}
+        aria-label={nightMode ? 'Switch to day mode' : 'Switch to night mode'}
+        aria-pressed={nightMode}
+      >
+        {nightMode ? '☀️' : '🌙'}
+      </button>
 
       <button
         className="mute-toggle"
