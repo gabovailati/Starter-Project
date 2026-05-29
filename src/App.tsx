@@ -52,6 +52,7 @@ function App() {
     if (typeof localStorage === 'undefined') return false
     return localStorage.getItem('wtc:night') === '1'
   })
+  const [milestone, setMilestone] = useState<number | null>(null)
 
   const nextIdRef = useRef(1)
   const lastDispatchRef = useRef(0)
@@ -81,6 +82,12 @@ function App() {
       count === 0
         ? 'welcome to conductor'
         : `welcome to conductor (${count})`
+  }, [count])
+
+  useEffect(() => {
+    if (count > 0 && count % 10 === 0) {
+      setMilestone(count)
+    }
   }, [count])
 
   const playChoo = useCallback(() => {
@@ -227,6 +234,19 @@ function App() {
       <div className="counter" aria-live="polite">
         {count} {count === 1 ? 'train' : 'trains'} dispatched
       </div>
+
+      {milestone !== null && (
+        <div
+          key={milestone}
+          className="milestone"
+          aria-live="assertive"
+          onAnimationEnd={() => setMilestone(null)}
+        >
+          <div className="milestone-emojis">🎉🚂🎉</div>
+          <div className="milestone-count">{milestone}</div>
+          <div className="milestone-label">trains dispatched!</div>
+        </div>
+      )}
     </main>
   )
 }
