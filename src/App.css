@@ -220,6 +220,7 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .train-emoji:hover { animation: none; }
   .steam { display: none; }
+  .star { animation: none; }
 
   .train.ltr,
   .train.rtl {
